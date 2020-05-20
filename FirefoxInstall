@@ -1,0 +1,76 @@
+#!/bin/zsh
+
+# Installs Firefox from a drag an drop .dmg file
+#
+# J. Vandehey 5/13/20
+#
+####################################################################################################
+#
+# Firefox Installation Script
+#
+####################################################################################################
+#
+# DESCRIPTION
+#
+# Automatically download and install Firefox
+#
+
+VendorDMG="firefox.dmg"
+
+processName=firefox
+
+tmpDir=$(mktemp -d )
+
+expectedTeamID="43AQ936H96"
+
+firefoxURL="https://download.mozilla.org/?product=firefox-latest&amp;os=osx&amp;lang=en-US"
+
+# Download vendor supplied DMG file into /tmp/
+curl --location "$firefoxURL" -o "$tmpDir/$VendorDMG"
+
+echo "$tmpDir/$VendorDMG"
+
+# Mount vendor supplied DMG File
+
+if ! dmgmount=$(echo 'Y'$'\n' | hdiutil attach "$tmpDir/$VendorDMG" -nobrowse -readonly | tail -n 1 | cut -c 54- ); then
+    echo "Error mounting $tmpDir/Firefox"
+fi
+
+# Test the newly downloaded app with GateKeeper to ensure that it is signed and notarized.
+# verify with spctl
+echo "Verifying: $processName"
+if ! teamID=$(spctl -a -vv /Volumes/Firefox/Firefox.app 2>&1 | awk '/origin=/ {print $NF }' | tr -d '()' ); then
+echo "GateKeeper verification has failed.....Exiting"
+hdiutil detach $dmgmount
+exit 1
+fi
+
+echo "Team ID: $teamID (expected: $expectedTeamID )"
+if [ "$expectedTeamID" != "$teamID" ]; then
+echo "Gatekeeper verification has failed......Exiting"
+hdiutil detach $dmgmount
+exit 1
+fi
+
+echo "Team ID matches spctl output"
+
+# If the app is running, kill it
+if pgrep -xq "$processName"; then
+echo "$processName is running. Killing the process"
+pkill $processName
+else
+echo "$processName is not running. Proceed w/ the install"
+fi
+
+# Copy contents of vendor supplied DMG file to /Applications/
+# Preserve all file attributes and ACLs
+cp -pPR /Volumes/Firefox/Firefox.app /Applications/
+
+# Identify the correct mount point for the vendor supplied DMG file
+#FirefoxDMG="$(hdiutil info | grep "/Volumes/Firefox" | awk '{ print $1 }')"
+
+# Unmount the vendor supplied DMG file
+hdiutil detach $dmgmount
+
+# Remove the downloaded vendor supplied DMG file
+rm -f /$tmpDir/$VendorDMG&
