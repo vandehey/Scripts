@@ -31,7 +31,7 @@ rm /var/tmp/depnotify.log
 
 ## Set a default progress title
 echo "Status: Fetching Software Titles...." >> /var/tmp/depnotify.log
-echo "Command: MainTitle: Welcome to New Relic!" >> /var/tmp/depnotify.log
+echo "Command: MainTitle: Welcome to Your Company!" >> /var/tmp/depnotify.log
 echo "Command: MainText: We are setting up your Mac with Your Company's core tools and settings. This process could take up to 20 minutes. IMPORTANT: PLEASE DO NOT REBOOT UNTIL THIS PROCESS IS COMPLETE." >> /var/tmp/depnotify.log
 echo "Command: Image: /var/tmp/logo.png" >> /var/tmp/depnotify.log
 
@@ -46,7 +46,7 @@ echo "Command: Image: /var/tmp/logo.png" >> /var/tmp/depnotify.log
 echo "Status: Starting installation of Your Company applications. Please do NOT reboot...." >> /var/tmp/depnotify.log
 sleep 3
 
-## Create newrelic admin user
+## Create admin user
 echo "Status: Creating Admin Account...." >> /var/tmp/depnotify.log
 sleep 2
 /usr/local/bin/jamf policy -event CustomTrigger1 -verbose
@@ -102,7 +102,7 @@ sleep 3
 /usr/local/bin/jamf policy -event CustomTrigger10
 
 ## Notify of recon running
-echo "Status: Finishing Installation....Submitting computer info to New Relic" >> /var/tmp/depnotify.log
+echo "Status: Finishing Installation....Submitting computer info to Your Company" >> /var/tmp/depnotify.log
 sleep 5
 
 ## Notify of recon running
