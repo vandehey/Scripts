@@ -1,4 +1,19 @@
-#!/bin/bash
+#!/bin/zsh
+
+# Installs Google Chrome from a drag an drop .dmg file
+#
+# J. Vandehey 5/20/19
+#
+####################################################################################################
+#
+# Chrome Search Provider
+#
+####################################################################################################
+#
+# DESCRIPTION
+#
+# Quits Chrome, uses sqlite3 to create a new search provider, then launches Chrome
+#
 
 ## Nab the current user
 CURRENTUSER=$(/usr/bin/python -c 'from SystemConfiguration import SCDynamicStoreCopyConsoleUser; import sys; username = (SCDynamicStoreCopyConsoleUser(None, None, None) or [None])[0]; username = [username,""][username in [u"loginwindow", None, u""]]; sys.stdout.write(username + "\n");')
